@@ -30,6 +30,18 @@ class MainActivity : ComponentActivity() {
                 composable("register") {
                     RegisterScreen(navController)
                 }
+                composable("home") {
+                    HomeScreen(navController)
+                }
+                composable("lupapassword") {
+                    LupaPasswordScreen(navController)
+                }
+                composable("verifikasi") {
+                    VerifikasiEmailScreen(navController)
+                }
+                composable("passwordbaru") {
+                    AturPasswordBaruScreen(navController)
+                }
             }
         }
     }

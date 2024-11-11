@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,12 +19,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -31,8 +36,14 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController) {
+    val nama = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+    val konfirmasiPassword = remember { mutableStateOf("") }
+    val noHandphone = remember { mutableStateOf("") }
+
     Column(
-        modifier = Modifier.fillMaxSize() .padding(start = 16.dp),
+        modifier = Modifier.fillMaxSize() .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start
     ) {
@@ -49,9 +60,10 @@ fun RegisterScreen(navController: NavController) {
         Spacer(modifier = Modifier.padding(5.dp))
 
         TextField(
-            value = "", onValueChange = {},
-            modifier = Modifier.fillMaxWidth().
-            padding(end = 16.dp),
+            value = nama.value,
+            onValueChange = { newText -> nama.value = newText },
+            modifier = Modifier
+                .fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color(0xFFE5E5E5)
             )
@@ -63,9 +75,11 @@ fun RegisterScreen(navController: NavController) {
         
         Spacer(modifier = Modifier.padding(5.dp))
 
-        TextField(value = "", onValueChange = {},
-            modifier = Modifier.fillMaxWidth().
-            padding(end = 16.dp),
+        TextField(
+            value = email.value,
+            onValueChange = { newText -> email.value = newText },
+            modifier = Modifier
+                .fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color(0xFFE5E5E5)
             )
@@ -77,12 +91,15 @@ fun RegisterScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.padding(5.dp))
 
-        TextField(value = "", onValueChange = {},
-            modifier = Modifier.fillMaxWidth().
-            padding(end = 16.dp),
+        TextField(
+            value = password.value,
+            onValueChange = { newText -> password.value = newText },
+            modifier = Modifier
+                .fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color(0xFFE5E5E5)
-            )
+            ),
+            visualTransformation = PasswordVisualTransformation()
         )
 
         Spacer(modifier = Modifier.padding(5.dp))
@@ -91,12 +108,15 @@ fun RegisterScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.padding(5.dp))
 
-        TextField(value = "", onValueChange = {},
-            modifier = Modifier.fillMaxWidth().
-            padding(end = 16.dp),
+        TextField(
+            value = konfirmasiPassword.value,
+            onValueChange = { newText -> konfirmasiPassword.value = newText },
+            modifier = Modifier
+                .fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color(0xFFE5E5E5)
-            )
+            ),
+            visualTransformation = PasswordVisualTransformation()
         )
 
         Spacer(modifier = Modifier.padding(5.dp))
@@ -105,12 +125,15 @@ fun RegisterScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.padding(5.dp))
 
-        TextField(value = "", onValueChange = {},
-            modifier = Modifier.fillMaxWidth().
-            padding(end = 16.dp),
+        TextField(
+            value = noHandphone.value,
+            onValueChange = { newText -> noHandphone.value = newText },
+            modifier = Modifier
+                .fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color(0xFFE5E5E5)
-            )
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.padding(10.dp))
@@ -119,7 +142,6 @@ fun RegisterScreen(navController: NavController) {
             onClick = { /* TODO: Handle login click */ },
             colors = ButtonDefaults.buttonColors(Color(0xFF273526)),
             modifier = Modifier.fillMaxWidth()
-                .padding(end = 16.dp)
         ) {
             Text(text = "Daftar", color = Color.White)
         }

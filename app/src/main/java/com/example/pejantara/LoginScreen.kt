@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Checkbox
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -33,10 +36,13 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController) {
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp),
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start
     ) {
@@ -52,9 +58,11 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.padding(10.dp))
 
-        TextField(value = "", onValueChange = {},
-            modifier = Modifier.fillMaxWidth().
-            padding(end = 16.dp),
+        TextField(
+            value = email.value,
+            onValueChange = { newText -> email.value = newText },
+            modifier = Modifier
+                .fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color(0xFFE5E5E5)
             )
@@ -66,19 +74,21 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.padding(10.dp))
 
-        TextField(value = "", onValueChange = {},
-            modifier = Modifier.fillMaxWidth().
-            padding(end = 16.dp),
+        TextField(
+            value = password.value,
+            onValueChange = { newText -> password.value = newText },
+            modifier = Modifier
+                .fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color(0xFFE5E5E5)
-            )
+            ),
+            visualTransformation = PasswordVisualTransformation()
         )
 
         Spacer(modifier = Modifier.padding(10.dp))
 
         Row (
-            modifier = Modifier.fillMaxWidth()
-                .padding(end = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
@@ -90,18 +100,19 @@ fun LoginScreen(navController: NavController) {
                 )
                 Text(text = "Ingat Saya")
             }
-            Text(text = "Lupa Password?", modifier = Modifier.clickable {
-                /* TODO: Handle forgot password click */
-            })
+            Text(text = "Lupa Password?",
+                modifier = Modifier.clickable {
+                    navController.navigate("lupaPassword")
+                }
+            )
         }
 
         Spacer(modifier = Modifier.padding(10.dp))
 
         Button(
-            onClick = { /* TODO: Handle login click */ },
+            onClick = {navController.navigate("verifikasi")},
             colors = ButtonDefaults.buttonColors(Color(0xFF273526)),
-            modifier = Modifier.fillMaxWidth().
-            padding(end = 16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Masuk", color = Color.White)
         }
@@ -142,7 +153,8 @@ fun LoginScreen(navController: NavController) {
             .align(CenterHorizontally)
             .clickable {
                 navController.navigate("register")
-            })
+            }
+        )
 
     }
 }
