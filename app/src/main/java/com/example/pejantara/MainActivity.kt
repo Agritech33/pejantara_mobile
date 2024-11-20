@@ -42,6 +42,15 @@ class MainActivity : ComponentActivity() {
                 composable("passwordbaru") {
                     AturPasswordBaruScreen(navController)
                 }
+                composable("ubahpassword") {
+                    UbahPassword(navController)
+                }
+                composable("keterangan") {
+                    KeteranganScreen(navController)
+                }
+                composable("profil") {
+                    ProfileScreen(navController)
+                }
             }
         }
     }

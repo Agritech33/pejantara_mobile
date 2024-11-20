@@ -4,24 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,13 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LupaPasswordScreen(navController: NavController) {
-    val email = remember { mutableStateOf("") }
-
-    Column (
-        modifier = Modifier.fillMaxSize()
+fun KeteranganScreen(navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
             .padding(top = 25.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -45,7 +39,7 @@ fun LupaPasswordScreen(navController: NavController) {
         TopAppBar(
             backgroundColor = Color(0xFF45624E),
             title = {
-                androidx.compose.material.Text("Lupa Password", color = Color.White)
+                androidx.compose.material.Text("Keterangan", color = Color.White)
             },
             navigationIcon = {
                 androidx.compose.material.IconButton(onClick = { /* Handle back navigation */ }) {
@@ -58,34 +52,32 @@ fun LupaPasswordScreen(navController: NavController) {
             }
         )
 
-        Spacer(modifier = Modifier.padding(16.dp))
-
-        Text("Silahkan masukkan kembali email yang")
-        Text("sudah anda daftarkan!!")
-
-        Spacer(modifier = Modifier.padding(10.dp))
-
-        TextField(
-            value = email.value,
-            onValueChange = { newText -> email.value = newText },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color(0xFFE5E5E5)
-            )
-        )
-
-        Button(
-            onClick = {
-                navController.navigate("passwordbaru")
-            },
-            colors = ButtonDefaults.buttonColors(Color(0xFF273526)),
-            modifier = Modifier.fillMaxWidth()
-                .padding(16.dp)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Konfirmasi", color = Color.White)
+            item {
+                Image(
+                    painter = painterResource(id = R.drawable.keterangan_1),
+                    contentDescription = "Keterangan1",
+                )
+                Text(
+                    "Yuk cari tahu cara mendaur ulang sampah jenis plastik!",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            items(listOf(
+                R.drawable.keterangan_2,
+                R.drawable.keterangan_3,
+                R.drawable.keterangan_4
+            )) { imageRes ->
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = "Keterangan",
+                )
+            }
         }
-
     }
 }
