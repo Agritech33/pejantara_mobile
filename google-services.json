@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "575197724227",
+    "project_id": "agritech-application",
+    "storage_bucket": "agritech-application.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:575197724227:android:7434dddf1a68ba65251ef6",
+        "android_client_info": {
+          "package_name": "com.agritech.pejantaraapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-qdVtYm4xhR02kxlcv5p4GwT_0uABULE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

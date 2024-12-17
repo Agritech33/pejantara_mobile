@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>Database.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #2aacb8;}
+.ln { color: #4b5059; font-weight: normal; font-style: normal; }
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Database.kt</font>
+</center></td></tr></table>
+<pre><a name="l1"><span class="ln">1    </span></a><span class="s0">package </span><span class="s1">com</span><span class="s2">.</span><span class="s1">agritech</span><span class="s2">.</span><span class="s1">pejantaraapp</span><span class="s2">.</span><span class="s1">data</span><span class="s2">.</span><span class="s1">database</span>
+<a name="l2"><span class="ln">2    </span></a>
+<a name="l3"><span class="ln">3    </span></a><span class="s1">import androidx</span><span class="s2">.</span><span class="s1">room</span><span class="s2">.</span><span class="s1">Database</span>
+<a name="l4"><span class="ln">4    </span></a><span class="s1">import androidx</span><span class="s2">.</span><span class="s1">room</span><span class="s2">.</span><span class="s1">RoomDatabase</span>
+<a name="l5"><span class="ln">5    </span></a>
+<a name="l6"><span class="ln">6    </span></a><span class="s1">@Database</span><span class="s2">(</span><span class="s1">entities </span><span class="s2">= [</span><span class="s1">Trash::</span><span class="s0">class</span><span class="s2">, </span><span class="s1">LaporanEntity::</span><span class="s0">class</span><span class="s2">], </span><span class="s1">version </span><span class="s2">= </span><span class="s3">3</span><span class="s2">)</span>
+<a name="l7"><span class="ln">7    </span></a><span class="s1">abstract </span><span class="s0">class </span><span class="s1">Database : RoomDatabase</span><span class="s2">() {</span>
+<a name="l8"><span class="ln">8    </span></a>
+<a name="l9"><span class="ln">9    </span></a>    <span class="s1">abstract </span><span class="s0">fun </span><span class="s1">trashDao</span><span class="s2">()</span><span class="s1">: TrashDao</span>
+<a name="l10"><span class="ln">10   </span></a>    <span class="s1">abstract </span><span class="s0">fun </span><span class="s1">laporanDao</span><span class="s2">()</span><span class="s1">: LaporanDao</span>
+<a name="l11"><span class="ln">11   </span></a><span class="s2">}</span>
+<a name="l12"><span class="ln">12   </span></a></pre>
+</body>
+</html>
