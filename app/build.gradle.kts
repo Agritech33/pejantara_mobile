@@ -134,6 +134,9 @@ dependencies {
 
     implementation ("com.airbnb.android:lottie-compose:6.0.0")
 
+    implementation ("com.google.firebase:firebase-appcheck-playintegrity:16.0.0")
+
+
 }
 
 kapt {

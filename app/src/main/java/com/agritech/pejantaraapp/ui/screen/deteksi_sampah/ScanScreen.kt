@@ -1,5 +1,7 @@
 package com.agritech.pejantaraapp.ui.screen.deteksi_sampah
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import com.agritech.pejantaraapp.R
@@ -50,80 +53,30 @@ fun ScanScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val uploadState by viewModel.uploadState.collectAsState()
-
-    // CameraX-related states
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     var preview by remember { mutableStateOf<Preview?>(null) }
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
     var cameraSelector by remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
-    val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
-    // Handle Upload State
-    when (uploadState) {
-        is Resource.Loading -> {
-            // Tampilkan indikator loading jika diperlukan
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-        is Resource.Success -> {
-            Toast.makeText(context, "Deteksi Berhasil", Toast.LENGTH_SHORT).show()
-            val imagePath = (uploadState as Resource.Success<Long>).data.toString()
-            navController.navigate("result/${Uri.encode(imagePath)}") {
-                popUpTo(Screen.Scan.route) { inclusive = false }
-            }
-            viewModel.resetUploadState()
-        }
-        is Resource.Error -> {
-            Toast.makeText(context, (uploadState as Resource.Error).error, Toast.LENGTH_SHORT).show()
-            viewModel.resetUploadState()
-        }
-    }
-
-    // Gallery Launcher
-    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { selectedUri ->
-            val file = uriToFile(selectedUri, context) // Konversi URI ke File lokal
-            val reducedFile = file.reduceFileImage()  // Optimalkan ukuran file
-            viewModel.uploadImage(reducedFile)
-        }
-    }
-
-    // Camera Permission Launcher
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (!isGranted) {
-            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    // Request Camera Permission
-    LaunchedEffect(Unit) {
-        cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-    }
-
-    // PreviewView setup
+    // Setup PreviewView
     val previewView = remember { PreviewView(context) }
 
-    // Initialize CameraX
-    LaunchedEffect(cameraProviderFuture) {
+    // Lifecycle Aware Camera Setup
+    LaunchedEffect(cameraSelector) {
         val cameraProvider = cameraProviderFuture.get()
 
-        // Set up Preview Use Case
-        val newPreview = Preview.Builder().build().also { preview ->
-            preview.setSurfaceProvider(previewView.surfaceProvider)
-        }
-
-        // Set up ImageCapture Use Case
-        val newImageCapture = ImageCapture.Builder().build()
+        // Release previous bindings
+        cameraProvider.unbindAll()
 
         try {
-            cameraProvider.unbindAll()
+            // Reinitialize use cases
+            val newPreview = Preview.Builder().build().apply {
+                setSurfaceProvider(previewView.surfaceProvider)
+            }
+            val newImageCapture = ImageCapture.Builder().build()
+
+            // Bind to lifecycle
             cameraProvider.bindToLifecycle(
                 lifecycleOwner,
                 cameraSelector,
@@ -132,8 +85,9 @@ fun ScanScreen(
             )
             preview = newPreview
             imageCapture = newImageCapture
+            Log.d("ScanScreen", "Camera switched to: ${if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) "Back" else "Front"}")
         } catch (e: Exception) {
-            Log.e("ScanScreen", "Error binding camera: ${e.message}", e)
+            Log.e("ScanScreen", "Error switching camera: ${e.message}", e)
         }
     }
 
@@ -142,58 +96,34 @@ fun ScanScreen(
         // Camera Preview
         AndroidView(
             factory = { previewView },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         )
 
-        // Controls Overlay
+        // Controls
         Box(
             modifier = Modifier
-                .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter),
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // Add from Gallery
-                IconButton(
-                    onClick = { galleryLauncher.launch("image/*") },
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_add_image),
-                        contentDescription = "Add Image",
-                        modifier = Modifier.size(120.dp)
-                    )
-                }
-
                 // Capture Button
                 Button(
                     onClick = {
                         lifecycleOwner.lifecycleScope.launch {
                             val file = createCustomTempFile(context)
                             val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()
-
                             imageCapture?.takePicture(
                                 outputOptions,
                                 cameraExecutor,
                                 object : ImageCapture.OnImageSavedCallback {
-                                    override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                                         lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                                            try {
-                                                Log.d("ScanScreen", "Image saved to: ${file.path}")
-                                                val reducedFile = file.reduceFileImage()
-                                                val encodedImagePath = Uri.encode(reducedFile.path)
-                                                viewModel.uploadImage(reducedFile)
-
-                                                // Navigasi harus dilakukan di Main Thread
-                                                navController.navigate("result/${Uri.encode(reducedFile.path)}")
-                                            } catch (e: Exception) {
-                                                Log.e("ScanScreen", "Error processing image", e)
-                                            }
+                                            val reducedFile = file.reduceFileImage()
+                                            viewModel.uploadImage(reducedFile)
+                                            navController.navigate("result/${Uri.encode(reducedFile.path)}")
                                         }
                                     }
 
@@ -203,35 +133,28 @@ fun ScanScreen(
                                 }
                             )
                         }
-                    },
-                    modifier = Modifier.size(80.dp),
-                )
-                    {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_capture),
-                        contentDescription = "Capture"
-                    )
+                    }
+                ) {
+                    Text("Capture")
                 }
-                // Switch Camera
-                IconButton(
+
+                // Switch Camera Button
+                Button(
                     onClick = {
                         cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
                             CameraSelector.DEFAULT_FRONT_CAMERA
                         } else {
                             CameraSelector.DEFAULT_BACK_CAMERA
                         }
-                    },
+                    }
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_switch_camera),
-                        contentDescription = "Switch Camera",
-                        modifier = Modifier.size(120.dp)
-                    )
+                    Text("Switch Camera")
                 }
             }
         }
     }
 }
+
 
 
 //@Preview(showBackground = true, widthDp = 412, heightDp = 917)

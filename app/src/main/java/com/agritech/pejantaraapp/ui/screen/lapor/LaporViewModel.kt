@@ -21,7 +21,7 @@ class LaporViewModel @Inject constructor(
         tanggal: String,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit,
-        updateCoins: (Int) -> Unit
+//        updateCoins: (Int) -> Unit
     ) {
         viewModelScope.launch {
             try {
@@ -36,7 +36,7 @@ class LaporViewModel @Inject constructor(
 
                 // Hitung koin berdasarkan berat sampah
                 val coinsEarned = berat * 1000 // Contoh: 1 kg = 1000 koin
-                updateCoins(coinsEarned) // Beritahu ViewModel Profil untuk memperbarui koin
+//                updateCoins(coinsEarned) // Beritahu ViewModel Profil untuk memperbarui koin
 
                 onSuccess()
             } catch (e: Exception) {

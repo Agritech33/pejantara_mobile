@@ -23,16 +23,15 @@ import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.graphicsLayer
-
 @Composable
 fun SplashScreen(navController: NavHostController) {
-    val context = LocalContext.current
     var visible by remember { mutableStateOf(false) }
-
     val alpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
         animationSpec = tween(durationMillis = 1000)
@@ -40,9 +39,10 @@ fun SplashScreen(navController: NavHostController) {
 
     LaunchedEffect(Unit) {
         visible = true
-        delay(3000)
+        delay(5000)
         val user = FirebaseAuth.getInstance().currentUser
-        Log.d("SplashScreen", "User: $user, Verified: ${user?.isEmailVerified}")
+        Log.d("SplashScreen", "User status: $user, Verified: ${user?.isEmailVerified}")
+
         if (user != null && user.isEmailVerified) {
             navController.navigate("home") {
                 popUpTo("splash") { inclusive = true }
@@ -57,14 +57,11 @@ fun SplashScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color(0xFF4B675C))
             .graphicsLayer(alpha = alpha),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.wrapContentSize()
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo Aplikasi",
@@ -72,6 +69,22 @@ fun SplashScreen(navController: NavHostController) {
             )
         }
     }
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_splash),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+    }
 }
+
+
 
 

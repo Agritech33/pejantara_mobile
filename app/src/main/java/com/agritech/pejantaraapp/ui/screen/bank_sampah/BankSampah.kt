@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -73,13 +75,6 @@ fun BankSampahScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = "Cari Bank Sampah",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp)
-        )
-
         TextField(
             value = query,
             onValueChange = setQuery,
@@ -90,6 +85,7 @@ fun BankSampahScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
+                .clip(RoundedCornerShape(15.dp))
                 .background(Color.White, RoundedCornerShape(8.dp))
         )
 
@@ -123,13 +119,17 @@ fun BankSampahScreen(
     }
 }
 
+fun isValidLatLng(lat: Double, lng: Double): Boolean {
+    return lat in -90.0..90.0 && lng in -180.0..180.0
+}
+
 @Composable
 fun BankSampahMap(bankSampahList: List<BankSampah>, userLocation: LatLng) {
     val defaultLocation = LatLng(-6.200000, 106.816666) // Jakarta sebagai fallback
-    val currentLocation = if (userLocation.latitude == 0.0 && userLocation.longitude == 0.0) {
-        defaultLocation
-    } else {
+    val currentLocation = if (isValidLatLng(userLocation.latitude, userLocation.longitude)) {
         userLocation
+    } else {
+        defaultLocation
     }
 
     GoogleMap(
@@ -146,14 +146,19 @@ fun BankSampahMap(bankSampahList: List<BankSampah>, userLocation: LatLng) {
             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
         )
         bankSampahList.forEach { bankSampah ->
-            Marker(
-                state = MarkerState(position = LatLng(bankSampah.latitude, bankSampah.longitude)),
-                title = bankSampah.name,
-                snippet = bankSampah.address
-            )
+            if (isValidLatLng(bankSampah.latitude, bankSampah.longitude)) {
+                Marker(
+                    state = MarkerState(position = LatLng(bankSampah.latitude, bankSampah.longitude)),
+                    title = bankSampah.name,
+                    snippet = bankSampah.address
+                )
+            } else {
+                Log.e("BankSampahMap", "Invalid coordinates for ${bankSampah.name}")
+            }
         }
     }
 }
+
 
 fun getUserLocation(
     fusedLocationProviderClient: FusedLocationProviderClient,

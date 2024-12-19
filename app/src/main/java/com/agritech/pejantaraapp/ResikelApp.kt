@@ -43,12 +43,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.agritech.pejantaraapp.ui.screen.bank_sampah.BankSampahScreen
+import com.agritech.pejantaraapp.ui.screen.detail_result.ErrorScreen
 import com.agritech.pejantaraapp.ui.screen.history.history_laporan.HistoryLaporanScreen
 import com.agritech.pejantaraapp.ui.screen.history.history_laporan.HistoryLaporanViewModel
 import com.agritech.pejantaraapp.ui.screen.history.history_scan.HistoryScanScreen
@@ -70,19 +73,18 @@ fun ResikelApp(
 ) {
     val startDestination = "splash"
 
-    val user = FirebaseAuth.getInstance().currentUser
-//    val startDestination = if (user != null && user.isEmailVerified) "home" else "login"
-
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
         composable("splash") {
+            Log.d("NavHost", "Navigating to SplashScreen")
             SplashScreen(navController)
         }
 
         composable("login") {
+            Log.d("NavHost", "Navigating to LoginScreen")
             LoginScreen(navController)
         }
 
@@ -95,13 +97,15 @@ fun ResikelApp(
             VerifikasiEmailScreen(navController = navController, email = email)
         }
 
-        composable("home") {
+        composable(Screen.Home.route) {
+            Log.d("NavHost", "Navigating to HomeScreen")
             MainScreenWithScaffold(navController) {
                 HomeScreen(navController)
             }
         }
 
         composable(Screen.History.route) {
+            Log.d("NavHost", "Navigating to HistoryLaporanScreen")
             MainScreenWithScaffold(navController) {
                 val viewModel: HistoryLaporanViewModel = hiltViewModel()
                 HistoryLaporanScreen(viewModel = viewModel)
@@ -109,6 +113,7 @@ fun ResikelApp(
         }
 
         composable(Screen.ScanHistory.route) {
+            Log.d("NavHost", "Navigating to HistoryScanScreen")
             MainScreenWithScaffold(navController) {
                 val viewModel: HistoryScanViewModel = hiltViewModel()
                 HistoryScanScreen(viewModel = viewModel)
@@ -118,11 +123,12 @@ fun ResikelApp(
         composable(Screen.Scan.route) {
             Log.d("NavHost", "Navigating to ScanScreen")
             MainScreenWithScaffold(navController) {
-                ScanScreen(navController = navController)
+                ScanScreen(navController)
             }
         }
 
         composable(Screen.Lapor.route) {
+            Log.d("NavHost", "Navigating to LaporScreen")
             MainScreenWithScaffold(navController) {
                 val laporViewModel: LaporViewModel = hiltViewModel()
                 val profileViewModel: ProfileViewModel = hiltViewModel()
@@ -152,6 +158,7 @@ fun ResikelApp(
         }
 
         composable(Screen.Profile.route) {
+            Log.d("NavHost", "Navigating to ProfileScreen")
             MainScreenWithScaffold(navController) {
                 ProfileScreen(navController)
             }
@@ -170,20 +177,15 @@ fun ResikelApp(
             }
         }
 
-        composable("result/{imagePath}") { backStackEntry ->
-            val imagePath = backStackEntry.arguments?.getString("imagePath" ?: "")
+        composable("result/{imagePath}", arguments = listOf(navArgument("imagePath") {
+            type = NavType.StringType
+        })) { backStackEntry ->
+            val imagePath = backStackEntry.arguments?.getString("imagePath").orEmpty()
             MainScreenWithScaffold(navController) {
-                if (imagePath.isNullOrEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Gambar tidak tersedia atau path tidak valid",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                if (imagePath.isBlank() || !File(imagePath).exists()) {
+                    Log.e("NavHost", "Invalid imagePath: $imagePath")
+                    ErrorScreen("Gambar tidak ditemukan. Silakan coba lagi.") {
+                        navController.popBackStack()
                     }
                 } else {
                     ResultTutorialScreen(
@@ -193,7 +195,6 @@ fun ResikelApp(
                 }
             }
         }
-
 
 
         composable(Screen.BankSampah.route) {
@@ -216,21 +217,21 @@ fun MainScreenWithScaffold(
     navController: NavHostController,
     content: @Composable () -> Unit
 ) {
-    val currentRoute = navController.currentBackStackEntry?.destination?.route ?: ""
+    val currentRoute = navController.currentBackStackEntry?.destination?.route.orEmpty()
 
     Scaffold(
         topBar = {
-            if (currentRoute !in listOf("register", "verifikasi_email", "home", "scan", "change_password", "result/{imagePath}")) {
+            if (currentRoute !in listOf("register", "verifikasi_email", Screen.Home.route, Screen.Scan.route, "change_password", "result/{imagePath}")) {
                 TopBar(currentRoute)
             }
         },
         bottomBar = {
-            if (currentRoute !in listOf("register", "verifikasi_email", "scan", "result/{imagePath}")) {
+            if (currentRoute !in listOf("register", "verifikasi_email", Screen.Scan.route, "result/{imagePath}", Screen.BankSampah.route, "change_password")) {
                 BottomBar(navController)
             }
         }
     ) { innerPadding ->
-        Box(
+        Column (
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -258,6 +259,7 @@ fun TopBar(currentRoute: String?) {
                     Screen.History.route -> "Riwayat"
                     Screen.Profile.route -> "Profil"
                     Screen.Edukasi.route -> "Edukasi"
+                    Screen.BankSampah.route -> "Map Bank Sampah"
                     else -> "Statistik Sampah"
                 },
                 color = Color.White,
@@ -277,7 +279,7 @@ fun BottomBar(
 ) {
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .wrapContentHeight(Alignment.CenterVertically)
             .padding(horizontal = 16.dp)
             .clip(
@@ -341,7 +343,7 @@ fun BottomBar(
                         painter = painterResource(id = item.iconResId),
                         contentDescription = item.title,
                         tint = if (currentRoute == item.screen.route) Color(0xFF00C853) else Color.White,
-                        modifier = Modifier.size(38.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
             }

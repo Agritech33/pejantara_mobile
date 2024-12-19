@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -37,10 +38,12 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -79,144 +82,137 @@ import com.agritech.pejantaraapp.ui.navigation.Screen
 import com.agritech.pejantaraapp.ui.screen.profile.ProfileViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = hiltViewModel() // Inject ViewModel
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val profileState by viewModel.profileState.collectAsState()
-    var searchQuery by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val locationPermissionGranted = remember { mutableStateOf(false) }
+    var locationPermissionGranted by remember { mutableStateOf(false) }
 
-    // Request Location Permission
+    LaunchedEffect(profileState) {
+        Log.d("HomeScreen", "Profile state: $profileState")
+    }
+
     LaunchedEffect(Unit) {
-        requestLocationPermission(context) { isGranted ->
-            locationPermissionGranted.value = isGranted
-            if (!isGranted) {
-                Toast.makeText(context, "Izin lokasi diperlukan untuk menggunakan fitur ini", Toast.LENGTH_SHORT).show()
+        requestLocationPermission(context) { granted ->
+            locationPermissionGranted = granted
+            if (!granted) {
+                Toast.makeText(context, "Izin lokasi diperlukan untuk fitur ini.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFF45624E))
-                    .clip(RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp))
-            ) {
-                Row(
+    if (profileState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else if (profileState.name == null || profileState.email == null) {
+        Text(
+            text = "Gagal memuat data pengguna.",
+            color = Color.Gray,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    } else {
+        // Konten utama HomeScreen
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                // Header dengan informasi pengguna
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .background(Color(0xFF45624E))
+                        .clip(RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp))
                 ) {
-                    // Foto Profil
-                    Image(
-                        painter = if (profileState.photoUri != null) {
-                            rememberAsyncImagePainter(profileState.photoUri)
-                        } else {
-                            painterResource(id = R.drawable.profile) // Placeholder image
-                        },
-                        contentDescription = "Foto Profil",
+                    Row(
                         modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(Color.Gray), // Default background
-                        contentScale = ContentScale.Crop
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    // Nama dan Jumlah Uang
-                    Column {
-                        Text(
-                            text = profileState.name ?: "Nama tidak tersedia",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = if (profileState.photoUri != null) {
+                                rememberAsyncImagePainter(profileState.photoUri)
+                            } else {
+                                painterResource(id = R.drawable.profile) // Placeholder image
+                            },
+                            contentDescription = "Foto Profil",
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clip(CircleShape)
+                                .background(Color.Gray),
+                            contentScale = ContentScale.Crop
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(id = R.drawable.img_coin),
-                                contentDescription = "Icon Coin",
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        // Nama dan Coin
+                        Column {
                             Text(
-                                text = "${profileState.money ?: 0}",
+                                text = "Selamat Datang, ${profileState.name ?: "Pengguna"}!",
                                 color = Color.White,
-                                fontSize = 16.sp
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.img_coin),
+                                    contentDescription = "Icon Coin",
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${profileState.money ?: 0}",
+                                    color = Color.White,
+                                    fontSize = 16.sp
+                                )
+                            }
                         }
                     }
                 }
-//                // SearchBar
-//                SearchBar(
-//                    searchQuery = searchQuery,
-//                    onSearchQueryChanged = { searchQuery = it }
-//                )
             }
-        }
 
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                // Carousel
+                Carousel(modifier = Modifier.height(250.dp))
+            }
 
-        // Carousel Section
-        item {
-            Carousel(modifier = Modifier.height(250.dp))
-            Spacer(modifier = Modifier.padding(10.dp))
-        }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                // Layanan
+                Text(
+                    text = "Layanan",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                ServiceButton(navController = navController)
+            }
 
-        // Layanan Section
-        item {
-            Text(
-                text = "Layanan",
-                modifier = Modifier.padding(start = 16.dp),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.padding(10.dp))
-        }
-
-        item {
-            ServiceButton(navController = navController)
-            Spacer(modifier = Modifier.padding(10.dp))
-        }
-
-        // Edukasi Section
-        item {
-            EducationContent()
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                // Edukasi
+                Text(
+                    text = "Edukasi",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                EducationContent()
+            }
         }
     }
 }
 
-@Composable
-fun SearchBar(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
-//    OutlinedTextField(
-//        value = searchQuery,
-//        onValueChange = onSearchQueryChanged,
-//        placeholder = { Text("Cari...", color = Color.Gray) },
-//        singleLine = true,
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(horizontal = 16.dp, vertical = 8.dp)
-//            .clip(RoundedCornerShape(20.dp)),
-//        colors = OutlinedTextFieldDefaults.colors(
-//            unfocusedBorderColor = Color.White,
-//            focusedBorderColor = Color.White,
-//            cursorColor = Color.White
-//        ),
-//        textStyle = LocalTextStyle.current.copy(color = Color.Black)
-//    )
-}
 
 fun requestLocationPermission(context: Context, onResult: (Boolean) -> Unit) {
     val permission = Manifest.permission.ACCESS_FINE_LOCATION
@@ -242,18 +238,21 @@ fun Carousel(modifier: Modifier = Modifier) {
     val images = listOf(
         R.drawable.carousel_1,
         R.drawable.carousel_2,
-    )
+    ).takeIf { it.isNotEmpty() } ?: listOf(R.drawable.ic_add_photo)
     val pagerState = rememberPagerState(
         pageCount = { images.size }
     )
     if (images.isNotEmpty()) {
         LaunchedEffect(pagerState) {
-            while (true) {
-                delay(2000)
-                val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
-                pagerState.scrollToPage(nextPage)
+            if (pagerState.pageCount > 1) {
+                while (true) {
+                    delay(2000)
+                    val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
+                    pagerState.scrollToPage(nextPage)
+                }
             }
         }
+
     }
 
     val scope = rememberCoroutineScope()
@@ -365,7 +364,7 @@ fun ServiceButton(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(10.dp)
             .clip(CircleShape),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -391,7 +390,7 @@ fun ServiceIcon(iconId: Int, label: String, onClick: () -> Unit) {
             painter = painterResource(id = iconId),
             contentDescription = label,
             modifier = Modifier
-                .size(48.dp)
+                .size(68.dp)
                 .clip(CircleShape)
                 .padding(10.dp)
                 .background(Color(0xFF45624E))
@@ -462,6 +461,26 @@ fun EducationContent(modifier: Modifier = Modifier) {
         }
         Spacer(modifier = Modifier.height(10.dp))
     }
+}
+
+@Composable
+fun SearchBar(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
+//    OutlinedTextField(
+//        value = searchQuery,
+//        onValueChange = onSearchQueryChanged,
+//        placeholder = { Text("Cari...", color = Color.Gray) },
+//        singleLine = true,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 16.dp, vertical = 8.dp)
+//            .clip(RoundedCornerShape(20.dp)),
+//        colors = OutlinedTextFieldDefaults.colors(
+//            unfocusedBorderColor = Color.White,
+//            focusedBorderColor = Color.White,
+//            cursorColor = Color.White
+//        ),
+//        textStyle = LocalTextStyle.current.copy(color = Color.Black)
+//    )
 }
 
 @Preview(showBackground = true, widthDp = 412, heightDp = 917)

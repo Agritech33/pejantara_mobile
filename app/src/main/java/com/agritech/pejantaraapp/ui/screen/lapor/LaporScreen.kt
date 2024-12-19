@@ -90,6 +90,10 @@ fun LaporScreen(
     val context = LocalContext.current
     val options = listOf("Laporan Sampah", "Laporan TPS Liar")
 
+//    LaunchedEffect(profileState) {
+//        Log.d("HomeScreen", "Profile State: $profileState")
+//    }
+
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success) Log.d("LaporScreen", "Image captured successfully.")
@@ -326,8 +330,8 @@ fun LaporScreen(
                         },
                         onFailure = { error ->
                             Toast.makeText(context, "Gagal menambahkan laporan: $error", Toast.LENGTH_SHORT).show()
-                        },
-                        updateCoins = { coins -> profileViewModel.updateCoins(coins) } // Perbarui koin di Profil
+                        }
+//                        updateCoins = { coins -> profileViewModel.updateCoins(coins) } // Perbarui koin di Profil
                     )
                 },
                 modifier = Modifier

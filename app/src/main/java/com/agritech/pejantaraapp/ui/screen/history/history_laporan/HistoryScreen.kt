@@ -94,7 +94,6 @@ fun HistoryLaporanScreen(viewModel: HistoryLaporanViewModel) {
     }
 }
 
-
 @Composable
 fun TabItem(title: String, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(

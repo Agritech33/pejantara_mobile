@@ -5,11 +5,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agritech.pejantaraapp.data.Article
 import com.agritech.pejantaraapp.data.repository.EdukasiRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EdukasiViewModel(private val repository: EdukasiRepository) : ViewModel() {
+@HiltViewModel
+class EdukasiViewModel @Inject constructor(
+    private val repository: EdukasiRepository
+) : ViewModel() {
 
     private val _articles = MutableStateFlow<List<Article>>(emptyList())
     val articles: StateFlow<List<Article>> = _articles
@@ -32,4 +37,5 @@ class EdukasiViewModel(private val repository: EdukasiRepository) : ViewModel() 
         }
     }
 }
+
 

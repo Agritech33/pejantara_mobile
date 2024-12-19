@@ -12,7 +12,20 @@
           "package_name": "com.agritech.pejantaraapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "575197724227-hv86t4pjtdtdnmlhl9oh08hteoluupq8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agritech.pejantaraapp",
+            "certificate_hash": "d1ec87d03dcabe596653eca82bcb1ef0dfbcd433"
+          }
+        },
+        {
+          "client_id": "575197724227-g5hercqpt95iu4jjfobdt11qfbhbvaoa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB-qdVtYm4xhR02kxlcv5p4GwT_0uABULE"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "575197724227-g5hercqpt95iu4jjfobdt11qfbhbvaoa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

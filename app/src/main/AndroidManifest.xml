@@ -31,6 +31,9 @@
         <meta-data
             android:name="com.google.firebase.analytics.reporting_api_key"
             android:value="@string/google_api_key" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_api_key" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
