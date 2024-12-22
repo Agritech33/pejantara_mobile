@@ -10,7 +10,7 @@ import dagger.hilt.android.HiltAndroidApp
 class PejantaraApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        FirebaseFirestore.setLoggingEnabled(true) // Aktifkan Logging Firestore
+        FirebaseFirestore.setLoggingEnabled(true)
         FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
             PlayIntegrityAppCheckProviderFactory.getInstance()
         )

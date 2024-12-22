@@ -4,13 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.agritech.pejantaraapp.data.model.ProfileState
 import com.agritech.pejantaraapp.util.reduceFileImage
 import com.agritech.pejantaraapp.util.uriToFile
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,6 +41,9 @@ class ProfileViewModel @Inject constructor(
                 val profile = document.toObject(ProfileState::class.java)
                 if (profile != null) {
                     _profileState.value = profile.copy(isLoading = false)
+                    profile?.let {
+                        _profileState.value = it
+                    }
                 } else {
                     Log.e("ProfileViewModel", "Dokumen profil kosong.")
                     _profileState.value = ProfileState(isLoading = false)
@@ -168,106 +168,7 @@ class ProfileViewModel @Inject constructor(
             }
     }
 }
-//@HiltViewModel
-//class ProfileViewModel @Inject constructor(
-//    private val userRepository: UserRepository
-//) : ViewModel() {
-//
-//    private val _profileState = MutableStateFlow(ProfileState(isLoading = true))
-//    val profileState: StateFlow<ProfileState> = _profileState.asStateFlow()
-//
-//    init {
-//        loadUserProfile()
-//    }
-//
-//    private fun loadUserProfile() {
-//        viewModelScope.launch {
-//            try {
-//                val profile = userRepository.getUserProfile()
-//                if (profile != null) {
-//                    _profileState.value = profile
-//                } else {
-//                    _profileState.value = ProfileState(isLoading = false)
-//                }
-//            } catch (e: Exception) {
-//                Log.e("ProfileViewModel", "Error loading user profile: ${e.message}")
-//                _profileState.value = ProfileState(isLoading = false)
-//            }
-//        }
-//    }
-//
-//    fun updateName(newName: String) {
-//        viewModelScope.launch {
-//            try {
-//                userRepository.updateName(newName)
-//                _profileState.update { it.copy(name = newName) }
-//            } catch (e: Exception) {
-//                Log.e("ProfileViewModel", "Error updating name: ${e.message}")
-//            }
-//        }
-//    }
-//
-//    fun updatePhone(newPhone: String) {
-//        viewModelScope.launch {
-//            try {
-//                userRepository.updatePhone(newPhone)
-//                _profileState.update { it.copy(phone = newPhone) }
-//            } catch (e: Exception) {
-//                Log.e("ProfileViewModel", "Error updating phone: ${e.message}")
-//            }
-//        }
-//    }
-//
-//    fun updateLocationPreference(isEnabled: Boolean) {
-//        viewModelScope.launch {
-//            try {
-//                userRepository.updateLocationPreference(isEnabled)
-//                _profileState.update { it.copy(isLocationEnabled = isEnabled) }
-//            } catch (e: Exception) {
-//                Log.e("ProfileViewModel", "Error updating location preference: ${e.message}")
-//            }
-//        }
-//    }
-//
-//    fun uploadProfileImage(
-//        context: Context,
-//        uri: Uri,
-//        onSuccess: () -> Unit,
-//        onFailure: (String) -> Unit
-//    ) {
-//        viewModelScope.launch {
-//            try {
-//                val newPhotoUri = userRepository.uploadProfileImage(context, uri)
-//                _profileState.update { it.copy(photoUri = newPhotoUri) }
-//                onSuccess()
-//            } catch (e: Exception) {
-//                onFailure(e.message ?: "Error uploading profile image")
-//            }
-//        }
-//    }
-//
-//    fun updatePassword(oldPassword: String, newPassword: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-//        viewModelScope.launch {
-//            try {
-//                userRepository.updatePassword(oldPassword, newPassword)
-//                onSuccess()
-//            } catch (e: Exception) {
-//                onFailure(e.message ?: "Error updating password")
-//            }
-//        }
-//    }
-//
-//    fun updateCoins(coins: Int) {
-//        viewModelScope.launch {
-//            try {
-//                val updatedCoins = userRepository.updateCoins(coins)
-//                _profileState.update { it.copy(money = updatedCoins) }
-//            } catch (e: Exception) {
-//                Log.e("ProfileViewModel", "Error updating coins: ${e.message}")
-//            }
-//        }
-//    }
-//}
+
 
 
 

@@ -61,7 +61,6 @@ fun ResultTutorialScreen(
     onBack: () -> Unit,
     viewModel: ResultViewModel = hiltViewModel()
 ) {
-    // Decode dan validasi path
     val decodedImagePath = Uri.decode(imagePath)
     val file = File(decodedImagePath)
 
@@ -73,7 +72,6 @@ fun ResultTutorialScreen(
         return
     }
 
-    // Load hasil deteksi
     LaunchedEffect(decodedImagePath) {
         viewModel.loadResult(file)
     }
@@ -142,7 +140,6 @@ fun ResultContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Tampilkan gambar lokal
             Image(
                 painter = rememberAsyncImagePainter(model = imageFile),
                 contentDescription = "Hasil Deteksi",
@@ -153,7 +150,6 @@ fun ResultContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Nama jenis sampah
             Text(
                 text = "Jenis Sampah: $trashType",
                 style = MaterialTheme.typography.titleLarge,

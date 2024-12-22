@@ -28,14 +28,12 @@ class TrashRepository(
         try {
             emit(Resource.Loading)
 
-            // Validasi file gambar
             val imageFile = image.reduceFileImage()
             if (!imageFile.exists() || imageFile.length() == 0L) {
                 emit(Resource.Error("Gambar tidak valid atau kosong."))
                 return@flow
             }
 
-            // Siapkan request
             val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
             val multipartBody = MultipartBody.Part.createFormData(
                 "file",
@@ -43,21 +41,18 @@ class TrashRepository(
                 requestImageFile
             )
 
-            // Prediksi di server
             Log.d("TrashRepository", "Mengunggah gambar ke server...")
             val response = apiService.predictTrash(multipartBody)
 
-            // Simpan hasil prediksi ke database
-            val predictedClass = response.prediction // Langsung ambil prediction dari response
+            val predictedClass = response.prediction
             val trash = Trash(
                 predictedClass = predictedClass,
-                videoUrl = "",                       // Kosong karena tidak ada dalam respons
-                articleUrl = "",                     // Kosong karena tidak ada dalam respons
+                videoUrl = "",
+                articleUrl = "",
                 imageData = imageFile.readBytes()
             )
             val trashId = trashDao.insert(trash)
 
-            // Hapus data sampah lama
             cleanUpOldTrash()
             emit(Resource.Success(trashId))
 
@@ -81,7 +76,6 @@ class TrashRepository(
         try {
             emit(Resource.Loading)
 
-            // Langkah 1: Prediksi Sampah
             val imageFile = image.reduceFileImage()
             val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
             val multipartBody = MultipartBody.Part.createFormData(
@@ -92,12 +86,12 @@ class TrashRepository(
 
             val response = apiService.predictTrash(multipartBody)
 
-            val predictedClass = response.prediction // Ambil langsung dari respons
+            val predictedClass = response.prediction
             val videos = tutorialRepository.getVideosByTrashType(predictedClass)
 
             val resultUiState = ResultUiState(
                 trashType = predictedClass,
-                imageUrl = "", // Tidak ada URL gambar/video di respons
+                imageUrl = "",
                 videos = videos
             )
             emit(Resource.Success(resultUiState))

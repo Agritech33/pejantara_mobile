@@ -20,7 +20,6 @@ class BankSampahViewModel : ViewModel() {
             BankSampah("Bank Sampah D", "Jalan D", 1.4234, 104.4234)
         )
 
-        // Validasi data sebelum diassign
         _bankSampahList.value = data.filter { isValidLatLng(it.latitude, it.longitude) }
     }
 

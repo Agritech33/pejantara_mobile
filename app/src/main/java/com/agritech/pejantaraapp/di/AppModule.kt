@@ -11,6 +11,7 @@ import com.agritech.pejantaraapp.data.repository.TrashRepository
 import com.agritech.pejantaraapp.data.repository.TutorialRepository
 import com.agritech.pejantaraapp.data.retrofit.ApiService
 import com.agritech.pejantaraapp.data.retrofit.RetrofitFactory
+import com.agritech.pejantaraapp.ui.screen.register.EmailService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -93,7 +94,7 @@ class AppModule {
     @Singleton
     fun provideGoogleSignInClient(@ApplicationContext context: Context): GoogleSignInClient {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(context.getString(R.string.default_web_client_id)) // default_web_client_id dari google-services.json
+            .requestIdToken(context.getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         return GoogleSignIn.getClient(context, gso)
@@ -109,6 +110,11 @@ class AppModule {
     @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    fun provideEmailService(): EmailService {
+        return EmailService(sendGridApiKey = "SENDGRID_API_KEY")
     }
 }
 

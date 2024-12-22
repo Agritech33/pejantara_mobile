@@ -1,6 +1,5 @@
 package com.agritech.pejantaraapp.ui.screen.lapor
 
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agritech.pejantaraapp.data.database.LaporanEntity
@@ -21,11 +20,10 @@ class LaporViewModel @Inject constructor(
         tanggal: String,
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit,
-//        updateCoins: (Int) -> Unit
+        updateCoins: (Int) -> Unit
     ) {
         viewModelScope.launch {
             try {
-                // Buat laporan baru
                 val laporan = LaporanEntity(
                     jenis = jenis,
                     deskripsi = deskripsi,
@@ -34,9 +32,8 @@ class LaporViewModel @Inject constructor(
                 )
                 laporanRepository.insertLaporan(laporan)
 
-                // Hitung koin berdasarkan berat sampah
                 val coinsEarned = berat * 1000 // Contoh: 1 kg = 1000 koin
-//                updateCoins(coinsEarned) // Beritahu ViewModel Profil untuk memperbarui koin
+                updateCoins(coinsEarned) // Beritahu ViewModel Profil untuk memperbarui koin
 
                 onSuccess()
             } catch (e: Exception) {

@@ -1,7 +1,5 @@
 package com.agritech.pejantaraapp.ui.screen.login
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignInClient

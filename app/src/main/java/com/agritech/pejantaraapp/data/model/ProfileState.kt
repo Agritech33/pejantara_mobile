@@ -7,7 +7,9 @@ data class ProfileState(
     val money: Int? = null,
     val photoUri: String? = null,
     val isLocationEnabled: Boolean = false,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val verificationCode: String? = null,
+    val isVerified: Boolean = false
 )
 
 

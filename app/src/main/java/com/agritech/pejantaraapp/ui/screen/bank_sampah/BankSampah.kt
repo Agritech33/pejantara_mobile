@@ -125,7 +125,7 @@ fun isValidLatLng(lat: Double, lng: Double): Boolean {
 
 @Composable
 fun BankSampahMap(bankSampahList: List<BankSampah>, userLocation: LatLng) {
-    val defaultLocation = LatLng(-6.200000, 106.816666) // Jakarta sebagai fallback
+    val defaultLocation = LatLng(-6.200000, 106.816666)
     val currentLocation = if (isValidLatLng(userLocation.latitude, userLocation.longitude)) {
         userLocation
     } else {
@@ -158,7 +158,6 @@ fun BankSampahMap(bankSampahList: List<BankSampah>, userLocation: LatLng) {
         }
     }
 }
-
 
 fun getUserLocation(
     fusedLocationProviderClient: FusedLocationProviderClient,

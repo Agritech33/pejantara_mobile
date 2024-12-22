@@ -18,8 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ResultViewModel @Inject constructor(
-    private val trashRepository: TrashRepository,
-    private val tutorialRepository: TutorialRepository
+    private val trashRepository: TrashRepository
+//    private val tutorialRepository: TutorialRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<Resource<ResultUiState>>(Resource.Loading)

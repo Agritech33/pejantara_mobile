@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -24,14 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -48,8 +42,6 @@ import com.agritech.pejantaraapp.R
 import com.agritech.pejantaraapp.ui.navigation.Screen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +51,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
     val isLoading by viewModel.isLoading.collectAsState()
     val context = LocalContext.current
 
-    // Remember Google Sign-In launcher
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -90,14 +81,12 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start
     ) {
-        // Header
         Text(text = "Masuk", fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.padding(8.dp))
         Text(text = "Selamat datang kembali!")
 
         Spacer(modifier = Modifier.padding(20.dp))
 
-        // Email Input
         Text(text = "Email / Username")
         Spacer(modifier = Modifier.padding(10.dp))
         TextField(
@@ -111,7 +100,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
 
         Spacer(modifier = Modifier.padding(10.dp))
 
-        // Password Input
         Text(text = "Password")
         Spacer(modifier = Modifier.padding(10.dp))
         TextField(
@@ -126,7 +114,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
 
         Spacer(modifier = Modifier.padding(10.dp))
 
-        // Remember Me & Forgot Password
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -149,7 +136,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
 
         Spacer(modifier = Modifier.padding(10.dp))
 
-        // Login Button
         Button(
             onClick = {
                 viewModel.loginWithEmailPassword(
@@ -157,7 +143,9 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                     password = password.value,
                     onSuccess = {
                         Toast.makeText(context, "Login berhasil!", Toast.LENGTH_SHORT).show()
-                        navController.navigate(Screen.Home.route)
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
                     },
                     onFailure = { error ->
                         Toast.makeText(context, "Error: $error", Toast.LENGTH_SHORT).show()
@@ -177,7 +165,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
 
         Spacer(modifier = Modifier.padding(10.dp))
 
-        // Separator
         Text(
             text = "Atau",
             modifier = Modifier.align(CenterHorizontally),
@@ -186,7 +173,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
 
         Spacer(modifier = Modifier.padding(10.dp))
 
-        // Google Sign-In
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center

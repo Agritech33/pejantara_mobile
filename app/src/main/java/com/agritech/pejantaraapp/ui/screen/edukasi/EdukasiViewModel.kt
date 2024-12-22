@@ -26,7 +26,7 @@ class EdukasiViewModel @Inject constructor(
     private fun loadArticles() {
         viewModelScope.launch {
             val apiArticles = repository.fetchArticlesFromApi()
-            if (apiArticles != null) {
+            if (apiArticles != null && apiArticles.isNotEmpty()) {
                 Log.d("EdukasiViewModel", "Loaded Articles from API: $apiArticles")
                 _articles.value = apiArticles
             } else {

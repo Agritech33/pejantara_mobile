@@ -30,10 +30,6 @@ class ScanViewModel @Inject constructor(
             }
         }
     }
-
-    fun resetUploadState() {
-        _uploadState.value = Resource.Loading
-    }
 }
 
 

@@ -23,12 +23,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -39,16 +35,10 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -68,20 +58,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.agritech.pejantaraapp.R
 import com.agritech.pejantaraapp.ui.navigation.Screen
 import com.agritech.pejantaraapp.ui.screen.profile.ProfileViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -118,13 +107,11 @@ fun HomeScreen(
             style = MaterialTheme.typography.bodyLarge
         )
     } else {
-        // Konten utama HomeScreen
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                // Header dengan informasi pengguna
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -153,7 +140,6 @@ fun HomeScreen(
 
                         Spacer(modifier = Modifier.width(12.dp))
 
-                        // Nama dan Coin
                         Column {
                             Text(
                                 text = "Selamat Datang, ${profileState.name ?: "Pengguna"}!",
@@ -182,13 +168,11 @@ fun HomeScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                // Carousel
                 Carousel(modifier = Modifier.height(250.dp))
             }
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                // Layanan
                 Text(
                     text = "Layanan",
                     fontSize = 20.sp,
@@ -200,7 +184,6 @@ fun HomeScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                // Edukasi
                 Text(
                     text = "Edukasi",
                     fontSize = 20.sp,
@@ -407,7 +390,7 @@ fun EducationContent(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(max = 600.dp) // Batas maksimum
+            .heightIn(max = 600.dp)
             .padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         Box(
@@ -483,9 +466,9 @@ fun SearchBar(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
 //    )
 }
 
-@Preview(showBackground = true, widthDp = 412, heightDp = 917)
-@Composable
-fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    HomeScreen(navController = navController)
-}
+//@Preview(showBackground = true, widthDp = 412, heightDp = 917)
+//@Composable
+//fun HomeScreenPreview() {
+//    val navController = rememberNavController()
+//    HomeScreen(navController = navController)
+//}
